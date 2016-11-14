@@ -107,18 +107,18 @@ Authoritative answers can be found from:
 # 7. Verify the nscd service is running
 root@ip-172-31-17-139:~# sudo apt-get install  nscd
 root@ip-172-31-17-139:~# sudo apt-get update
-root@ip-172-31-17-139:~# service nscd start
+root@ip-172-31-17-139:~# sudo service nscd start
  * Starting Name Service Cache Daemon nscd                      [ OK ]
-root@ip-172-31-17-139:~# service nscd status
+root@ip-172-31-17-139:~# sudo service nscd status
  * Status of Name Service Cache Daemon service:   
  * running.
 #
 # 8. Verify the ntpd service is running
 root@ip-172-31-17-139:~# sudo apt-get install ntp
 root@ip-172-31-17-139:~# sudo apt-get update
-root@ip-172-31-17-139:~# service ntp start
+root@ip-172-31-17-139:~# sudo service ntp start
  * Starting NTP server ntpd                                     [ OK ]
-root@ip-172-31-17-139:~# service ntp status
+root@ip-172-31-17-139:~# sudo service ntp status
  * NTP server is running
 
 
