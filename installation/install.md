@@ -361,7 +361,7 @@ until you complete the Bonus Lab.
 
 * See the graphic of install paths in the `tools/` subdirectory.
 * You can review a full CM HA [configuration here](http://www.cloudera.com/content/cloudera/en/documentation/core/latest/topics/admin_cm_ha_overview.html)
-* CDH operation does **not** depend on the Cloudera Manager server being operable
+* CDH operation does **not** depend on the Cloudera Manager server being operable (-> no vendor lock-in, only misses monitoring)
 * CM supports a REST API
     * Each API version is a superset of all prior versions
     * Try `http://<i>your_cm_host</i>:7180/api/version` in your browser

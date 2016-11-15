@@ -26,7 +26,7 @@
 * TaskTracker responsbilities
     * Provide a pre-determined number of mapper and reducer slots
     * Slots are child JVM processes
-    * Slot count per node is based on cores, "spindles", and <i>workload estimate</i>
+    * Slot count per node is based on cores (KR: w.r.t computing power), "spindles" (KR: = physical disk, w.r.t throughput), and <i>workload estimate</i>
 
 ---
 <div style="page-break-after: always;"></div>
@@ -36,7 +36,13 @@
 ### <center> Graphic overview
 
 <center><img src="http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/yarn_architecture.gif"></center>
+Resource Manager (for all job): 
+* Decide if a job can be run on YARN (resource demand) at all and when the job can be run (now, shortly, retry later)
+* Assigns resources
+Node Manager (per job): 
+* Supervises the Einhaltung of the assigned resources
 
+Goal: not velocity, but utilization (efficiently organize lots of small jobs on huge cluster)
 ---
 <div style="page-break-after: always;"></div>
 
@@ -92,6 +98,18 @@
   * Node labeling: assigning specific tasks to specific hardware
   * Custom, pluggable classifiers for auditing and reporting
 
+  
+Preemption not very reliable (Problem for mulit-tenancy systems)!
+~ Pool(CDH)/Queue(YARN) 1
+~~~ 1a) Ingestion
+~~~ 1b) Data Science
+~ Pool(CDH)/Queue(YARN) 2
+~~~ 2a) Ingestion
+~~~ 2b) Marketing
+Can be the case that if preemption is allowed from 1a to 1b, that also preemption from 2a to 1b happens
+There is no other way than basic cgroups at the moment.
+Cloudera wants to rewrite the preemption part on hierarchical scheduling.
+
 ---
 <div style="page-break-after: always;"></div>
 
@@ -99,6 +117,7 @@
 
 * YARN is backward-compatible to MapReduce
   * Doesn't mean MRv1 programs are YARN-aware
+  (Tolerated, but not optimized -> maybe slowered)
 * Read <a href="http://blog.cloudera.com/blog/2014/04/apache-hadoop-yarn-avoiding-6-time-consuming-gotchas/">Jeff Bean's blog post on common gotchas</a>, including:
     * Containers are not a drop-in replacement for slots
     * Hard to make an [apples-to-apples performance comparison] (http://blog.cloudera.com/blog/2014/02/getting-mapreduce-2-up-to-speed/)

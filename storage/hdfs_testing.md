@@ -24,10 +24,10 @@
     * Separation of concerns (adminisration, end users, security integration)
     * Planning for growth
 * Cloudera uses four role types to guide deployment
-    * Utility: cluster administration, integration services
+    * Utility: cluster administration, integration services (everything about the cluster itself)
     * Master: executive and supervisory processes
-    * Worker: storage and processing
-    * Edge: Client access, ingestion, security perimeter
+    * Worker: storage and processing 
+    * Edge: Client access, ingestion, security perimeter (user interface, source system interface = landing page for datasets)
 
 ---
 <div style="page-break-after: always;"></div>
@@ -40,7 +40,7 @@
 * Once a machine is assigned to a role, adjust the resource requirements
     * Master: four disks, mirror the OS volume 
         * One disk for logging and other storage requirements
-        * One disk for Zookeeper*
+        * One disk for Zookeeper* (-> making it work as fast as possible, not big size), same for journaling nodes
     * Worker: More disks and RAM 
     * Edge/Utility: VMs or older hardware can be sufficient
 
@@ -58,7 +58,7 @@
 <div style="page-break-after: always;"></div>
 
 ## <center> <a name="hdfs_smoke_testing"/> HDFS Smoke Testing
-
+KR: Always with an idea of the outcome, otherwise useless.
 * Following software installation, test hardware and network for failure
 * [The terasort suite](http://www.michael-noll.com/blog/2011/04/09/smoke-testing-and-stress-testing-an-hadoop-cluster-with-terasort-testdfsio-nnbench-mrbench/#terasort-benchmark-suite) is ideal for this: easy to apply and simple to monitor.
     * Some people recommend [TestDFSIO, nnbench, mrbench](http://www.michael-noll.com/blog/2011/04/09/smoke-testing-and-stress-testing-an-hadoop-cluster-with-terasort-testdfsio-nnbench-mrbench/#testdfsio) -- you have choices.
@@ -123,19 +123,21 @@ Adds cache locality to NN reports<p>
 * Local clients, such as `impalad`, can read caches locally 
     * Short-circuit read (SCR) API
     * Zero-copy read (ZCR) API
-
+KR: only for smaller datasets, e.g. important fact tables, small elastic search indices
+KR: don't cache everything manually, there is also the page cache to do  automatically for the most needed
+KR: works as mapping from Linux user cache to page space cache of copying
 ---
 <div style="page-break-after: always;"></div>
 
 ## <center> Directory caching: Implementation<p>
 
 <center><img src="http://www.cloudera.com/documentation/enterprise/latest/images/caching.png" height="325" width="400"></center>
-
+KR: not the User does it, but the Admin, e.g. using the ZCR API
 ---
 <div style="page-break-after: always;"></div>
 
 ## <center> Directory caching example
-
+KR: wait 3 minutes until it works
 ```
 $ hadoop fs -put myfile /user/mfernest/commons
 $ sudo -u hdfs hdfs cacheadmin -addPool mfe
