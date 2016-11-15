@@ -37,7 +37,7 @@
 
 <center><img src="http://hadoop.apache.org/docs/current/hadoop-yarn/hadoop-yarn-site/yarn_architecture.gif"></center>
 Resource Manager (for all job): 
-* Decide if a job can be run on YARN (resource demand) at all and when the job can be run (now, shortly, retry later)
+* Decide if a job can be run on YARN (resource demand) at all and when the job can be run (now, shortly, retry later) ~> sth. like Admission Control
 * Assigns resources
 Node Manager (per job): 
 * Supervises the Einhaltung of the assigned resources
@@ -153,6 +153,7 @@ Cloudera wants to rewrite the preemption part on hierarchical scheduling.
   * Could support CPU, memory, disk I/O, and network limits, if available
   * `Cluster > ClusterName > Static Service Pools`
 
+ ==> Inverse of a priorization based system, guaranteeing the absolute minimums (avoiding starvation)
 ---
 <div style="page-break-after: always;"></div>
 
@@ -177,7 +178,7 @@ Cloudera wants to rewrite the preemption part on hierarchical scheduling.
     * Currently running queries
     * Memory available
     * Current queue length
-* Each local <code>impalad</code> decides how to act
+* Each local <code>impalad</code> decides how to act  --> decentral decisioning instead of YARN central RM
     * To compensate for stale data, admission control is soft
 * Impala favors running more tasks over preserving headroom
     * Work to improve this decision-making is ongoing
@@ -240,6 +241,8 @@ Suppose you have a cluster with ten worker nodes. Each worker node has:
   * Give your answers in the same file as step 2.
 4. Capture your finished worksheet as a screenshot to `resources/labs/1_YarnCalcs.png`
 <div style="page-break-after: always;"></div>
+
+==> Adequate resource estimation cannot be done without considering the kind of work to be done
 
 ## <center> YARN/RM Lab: Static Service Pools
 

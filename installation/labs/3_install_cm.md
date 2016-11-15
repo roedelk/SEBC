@@ -44,19 +44,29 @@ Setting up cloudera-manager-server (5.9.0-1.cm590.p0.249~trusty-cm5) ...
    /etc/rc5.d/S90cloudera-scm-server -> ../init.d/cloudera-scm-server
 Processing triggers for ureadahead (0.100.0-16) ...
 
+sudo apt-get install python-software-properties
+sudo add-apt-repository ppa:webupd8team/java
+sudo apt-get update
+sudo apt-get install oracle-java7-installer
+
+ubuntu@ip-172-31-17-139:~$ sudo vi /etc/environment
+JAVA_HOME="/usr/share/java"
+
+vi ~/.bashrc
+export JAVA_HOME="/usr/lib/jvm/java-7-oracle"
+export PATH="$PATH:/usr/lib/jvm/java-7-oracle"
+
+
+export JAVA_HOME="/usr/lib/jvm/java-7-oracle"
+export PATH="$PATH:/usr/lib/jvm/java-7-oracle/bin"
+
+
+# http://www.cloudera.com/documentation/enterprise/5-8-x/topics/cm_ig_installing_configuring_dbs.html#concept_i2r_m3m_hn
+ubuntu@ip-172-31-17-139:$ sudo /usr/share/cmf/schema/scm_prepare_database.sh -u root -p pwd mysql scm scm scm
+
+GRANT ALL PRIVILEGES ON *.* TO 'scm'@'%' IDENTIFIED BY 'scm';
+
 ubuntu@ip-172-31-17-139:~$ sudo service cloudera-scm-server start
 Starting cloudera-scm-server:  * cloudera-scm-server started
 
 
-
-# Additional step for Ubuntu 14.04
-sudo vi /etc/apt/preferences.d/cloudera.pref
-"""
-Package: *
-Pin: release o=Cloudera, l=Cloudera
-Pin-Priority: 501
-"""
-
-# Cloudera Repository key
-wget https://archive.cloudera.com/cdh5/ubuntu/trusty/amd64/cdh/archive.key -O archive.key 
-sudo apt-key add archive.key
