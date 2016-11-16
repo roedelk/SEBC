@@ -155,7 +155,7 @@ Enter an object type in the search bar
 * Administration -> Alerts
 * Delivers to email or as SNMP traps
 * May be associated with
-    * Activity Monitor
+    * Activity Monitor (only used for MRv1)
     * Configuration changes (enable/disable only)
     * HBase (errors, poor region health)
     * Health metric thresholds (<font color="red">Bad</font> or <font color="orange">Concerning</font> result)
@@ -175,7 +175,7 @@ Enter an object type in the search bar
     * Service results may be "rolled up" from subordinate tests (roles, instances)
         * A single Bad or Concerning result affects the whole
     * Some metric tests can also be <a href="#cm_charting_time_series">charted</a>
-
+KR: Storage alert: ~80% of available because of HDFS read cache and Hbase caching
 ---
 <div style="page-break-after: always;"></div>
 
