@@ -63,4 +63,15 @@ cloudera-scm-server (pid  27429) is running...
 [added to /etc/my.cnf, correct?]
 binlog_format=mixed
 
+vi /var/log/cloudera-scm-server/cloudera-scm-server.log
+>> Started Jetty server
+
+mysql -u root -p
+mysql> create database hue;
+mysql> grant all privileges on hue.* to 'hue'@'%' identified by 'pwd';
+mysql> grant all on hue.* to 'hue'@'%' identified by 'pwd';
+
+mysql> create database oozie;
+mysql> grant all privileges on oozie.* to 'oozie'@'localhost' identified by 'oozie';
+mysql> grant all privileges on oozie.* to 'oozie'@'%' identified by 'oozie';
 
