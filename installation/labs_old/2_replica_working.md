@@ -1,16 +1,22 @@
-# MySQL installation
-# http://www.cloudera.com/documentation/enterprise/5-8-x/topics/cm_ig_mysql.html
+MySQL installation
 
-wget http://repo.mysql.com/mysql-community-release-el6-5.noarch.rpm
-sudo rpm -ivh mysql-community-release-el6-5.noarch.rpm
-yum update yum
-sudo yum install mysql-server
-sudo service mysqld start
-
-sudo service mysqld status
+wget https://dev.mysql.com/get/mysql-apt-config_0.8.0-1_all.deb
+sudo dpkg -i mysql-apt-config_0.8.0-1_all.deb
+>> Choosing mysql-5.6.34
+sudo apt-get update
+sudo apt-get install mysql-server
+>> Choosing root password "pwd"
+sudo service mysql status
 
 # Just have a look:
-vi /etc/my.cnf
+vi /etc/mysql/my.cnf
+
+# wget https://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.40.tar.gz
+# gunzip mysql-connector-java-5.1.40.tar.gz | tar -xvf
+# tar -xvf mysql-connector-java-5.1.40.tar
+# sudo cp mysql-connector-java-5.1.40/mysql-connector-java-5.1.40-bin.jar /usr/share/java/
+# alternative (easier & right version for OS):
+sudo apt-get install libmysql-java
 
 Use /usr/bin/mysql_secure_installation to:
 a. Set password protection for the server
@@ -20,35 +26,20 @@ d. Remove test databases
 e. Refresh privileges in memory
 f. Refreshes the mysqld service
 
-[root@ip-172-31-21-228 ~]# /usr/bin/mysql_secure_installation
-OK, successfully used password, moving on...
+sudo /usr/bin/mysql_secure_installation
+--
+Change the root password? [Y/n] n
+ ... skipping.
+By default, a MySQL installation has an anonymous user, allowing anyone to log into MySQL without having to have a user account created for them.  This is intended only for testing, and to make the installation go a bit smoother.  You should remove them before moving into a production environment.
 
-Setting the root password ensures that nobody can log into the MySQL
-root user without the proper authorisation.
-
-Set root password? [Y/n] Y
-New password:
-Re-enter new password:
-Password updated successfully!
-Reloading privilege tables..
- ... Success!
-
-By default, a MySQL installation has an anonymous user, allowing anyone
-to log into MySQL without having to have a user account created for
-them.  This is intended only for testing, and to make the installation
-go a bit smoother.  You should remove them before moving into a
-production environment.
 Remove anonymous users? [Y/n] Y
  ... Success!
+Normally, root should only be allowed to connect from 'localhost'.  This ensures that someone cannot guess at the root password from the network.
 
-Normally, root should only be allowed to connect from 'localhost'.  This
-ensures that someone cannot guess at the root password from the network.
 Disallow root login remotely? [Y/n] n
  ... skipping.
+By default, MySQL comes with a database named 'test' that anyone can access.  This is also intended only for testing, and should be removed before moving into a production environment.
 
-By default, MySQL comes with a database named 'test' that anyone can
-access.  This is also intended only for testing, and should be removed
-before moving into a production environment.
 Remove test database and access to it? [Y/n] Y
  - Dropping test database...
 ERROR 1008 (HY000) at line 1: Can't drop database 'test'; database doesn't exist
@@ -56,39 +47,36 @@ ERROR 1008 (HY000) at line 1: Can't drop database 'test'; database doesn't exist
  - Removing privileges on test database...
  ... Success!
 
-Reloading the privilege tables will ensure that all changes made so far
-will take effect immediately.
+Reloading the privilege tables will ensure that all changes made so far will take effect immediately.
 Reload privilege tables now? [Y/n] Y
  ... Success!
 
-All done!  If you've completed all of the above steps, your MySQL
-installation should now be secure.
+All done!  If you've completed all of the above steps, your MySQL installation should now be secure.
+
 Thanks for using MySQL!
 Cleaning up...
 
-[root@ip-172-31-21-228 ~]# sudo service mysqld restart
-Stopping mysqld:                                           [  OK  ]
-Starting mysqld:                                           [  OK  ]
+sudo service mysql restart
+ * Stopping MySQL Community Server 5.6.34
+..cat: /var/run/mysqld/mysqld.pid: No such file or directory
+..
+ * MySQL Community Server 5.6.34 is stopped
+ * Re-starting MySQL Community Server 5.6.34
+......
+ * MySQL Community Server 5.6.34 is started
 
-[root@ip-172-31-21-228 ~]# wget http://dev.mysql.com/get/Downloads/Connector-J/mysql-connector-java-5.1.40.tar.gz
-[root@ip-172-31-21-228 ~]# gunzip mysql-connector-java-5.1.40.tar.gz
-[root@ip-172-31-21-228 ~]# tar -xvf mysql-connector-java-5.1.40.tar
-[root@ip-172-31-21-228 ~]# sudo mkdir -p /usr/share/java/
-[root@ip-172-31-21-228 ~]# sudo cp mysql-connector-java-5.1.40/mysql-connector-java-5.1.40-bin.jar /usr/share/java/
-[root@ip-172-31-21-228 ~]# ln -s /usr/share/java/mysql-connector-java-5.1.40-bin.jar /usr/share/java/mysql-connector.jar
- 
 (all nodes) 
-[root@ip-172-31-21-228 ~]# sudo service mysqld stop
-[root@ip-172-31-21-228 ~]# sudo vi /etc/my.cnf
-[mysqld]
-log_bin=mysql-bin
-server_id=1 (n0)
-server_id=2 (n1)
-[root@ip-172-31-21-228 ~]# sudo service mysqld start
+sudo service mysql stop
+sudo vi /etc/mysql/my.cnf
+    [mysqld]
+    log-bin=mysql-bin
+    server-id=1 (n1)
+    server-id=2 (n2)
+sudo service mysql start
 
 (master node) 
 mysql -u root -p
-mysql> GRANT REPLICATION SLAVE ON *.* TO 'slave'@'ec2-35-156-18-128.eu-central-1.compute.amazonaws.com' IDENTIFIED BY 'pwd';
+mysql> GRANT REPLICATION SLAVE ON *.* TO 'slave'@'ec2-35-156-82-93.eu-central-1.compute.amazonaws.com' IDENTIFIED BY 'pwd';
 Query OK, 0 rows affected (0.01 sec)
 mysql>  SET GLOBAL binlog_format = 'ROW';
 Query OK, 0 rows affected (0.00 sec)
@@ -100,13 +88,13 @@ mysql> SHOW MASTER STATUS;
 +------------------+----------+--------------+------------------+-------------------+
 | File             | Position | Binlog_Do_DB | Binlog_Ignore_DB | Executed_Gtid_Set |
 +------------------+----------+--------------+------------------+-------------------+
-| mysql-bin.000002 |      370 |              |                  |                   |
+| mysql-bin.000001 |      369 |              |                  |                   |
 +------------------+----------+--------------+------------------+-------------------+
 1 row in set (0.00 sec)
 
 (slave node) # http://dev.mysql.com/doc/refman/5.7/en/replication-setup-slaves.html
-CHANGE MASTER TO MASTER_HOST='ec2-35-156-75-11.eu-central-1.compute.amazonaws.com', MASTER_USER='slave', MASTER_PASSWORD='pwd', 
-MASTER_LOG_FILE='mysql-bin.000002', MASTER_LOG_POS=370;
+CHANGE MASTER TO MASTER_HOST='ec2-35-156-86-130.eu-central-1.compute.amazonaws.com', MASTER_USER='slave', MASTER_PASSWORD='pwd', 
+MASTER_LOG_FILE='mysql-bin.000001', MASTER_LOG_POS=369;
 Query OK, 0 rows affected, 2 warnings (0.03 sec)
 
 mysql> START SLAVE;
@@ -167,12 +155,5 @@ Master_SSL_Verify_Server_Cert: No
             Executed_Gtid_Set:
                 Auto_Position: 0
 1 row in set (0.00 sec)
-
-
-[root@ip-172-31-21-228 ~]# mysql -u root -p -h ec2-35-156-18-128.eu-central-1.compute.amazonaws.com
-Enter password:
-ERROR 1130 (HY000): Host 'ip-172-31-21-228.eu-central-1.compute.internal' is not allowed to connect to this MySQL server
-GRANT ALL PRIVILEGES ON *.* TO 'root'@'%' IDENTIFIED BY 'pwd'
-[root@ip-172-31-21-228 ~]# mysql -u root -p -h ec2-35-156-75-11.eu-central-1.compute.amazonaws.com  
 
 ==> not working

@@ -1,77 +1,51 @@
 # 1a. Check vm.swappiness on all your nodes: http://askubuntu.com/questions/103915/how-do-i-configure-swappiness
-cat /proc/sys/vm/swappiness
-# -> 
+[ec2-user@ip-172-31-27-82 ~]$ cat /proc/sys/vm/swappiness
 60
 # 1b. Set the value to 1 if necessary
-sudo sysctl vm.swappiness=1
-cat /proc/sys/vm/swappiness
-# -> 
+[ec2-user@ip-172-31-27-82 ~]$ sudo sysctl vm.swappiness=1
+[ec2-user@ip-172-31-27-82 ~]$ cat /proc/sys/vm/swappiness
 1
 #
 # 2. Show the mount attributes of all volumes
-lsblk
-# ->
-NAME    MAJ:MIN RM   SIZE RO TYPE MOUNTPOINT
-xvda    202:0    0     8G  0 disk
-+-xvda1 202:1    0     8G  0 part /
-xvdb    202:16   0  37.5G  0 disk /mnt
-xvdc    202:32   0  37.5G  0 disk
+[ec2-user@ip-172-31-27-82 ~]$ lsblk
+NAME    MAJ:MIN RM SIZE RO TYPE MOUNTPOINT
+xvda    202:0    0  70G  0 disk
+└─xvda1 202:1    0  70G  0 part /
 #
-mount | grep /dev/xv
-# ->
-/dev/xvda1 on / type ext4 (rw,discard)
-/dev/xvdb on /mnt type ext3 (rw,_netdev)
+[ec2-user@ip-172-31-27-82 ~]$ mount | grep /dev/xv
+/dev/xvda1 on / type ext4 (rw)
 #
 # 3. Show the reserve space of any non-root, ext-based volumes
-df -hP | column -t
-# -> 
-Filesystem  Size  Used  Avail  Use%  Mounted         on
-udev        7.4G  12K   7.4G   1%    /dev
-tmpfs       1.5G  344K  1.5G   1%    /run
-/dev/xvda1  7.8G  801M  6.6G   11%   /
-none        4.0K  0     4.0K   0%    /sys/fs/cgroup
-none        5.0M  0     5.0M   0%    /run/lock
-none        7.4G  0     7.4G   0%    /run/shm
-none        100M  0     100M   0%    /run/user
-/dev/xvdb   37G   49M   35G    1%    /mnt
+[ec2-user@ip-172-31-27-82 ~]$ df -hP | column -t
+Filesystem  Size  Used  Avail  Use%  Mounted   on
+/dev/xvda1  69G   1.7G  64G    3%    /
+tmpfs       7.3G  0     7.3G   0%    /dev/shm
 #
 # 4. Show that transparent hugepages is disabled
-sudo vi /proc/vmstat | grep hugepages transparent
-# -> 
-Vim: Warning: Output is not to a terminal
-nr_anon_transparent_hugepages 0
-
-sudo su -
-cat /sys/kernel/mm/transparent_hugepage/enabled
-cat /sys/kernel/mm/transparent_hugepage/defrag
 #
-# Create the init.d script at /etc/init.d/disable-transparent-hugepages 
-# (https://docs.mongodb.com/manual/tutorial/transparent-huge-pages/)
-
-#!/bin/bash
+sudo su -
 echo 'never' > /sys/kernel/mm/transparent_hugepage/enabled
 echo 'never' > /sys/kernel/mm/transparent_hugepage/defrag
-
-sudo chmod 755 /etc/init.d/disable-transparent-hugepages
-sudo sh /etc/init.d/disable-transparent-hugepages
-sudo update-rc.d disable-transparent-hugepages defaults
-
-root@ip-172-31-17-139:~# cat /sys/kernel/mm/transparent_hugepage/enabled
+cat /sys/kernel/mm/transparent_hugepage/enabled
+cat /sys/kernel/mm/transparent_hugepage/defrag
+exit
+#
+[root@ip-172-31-27-85 ~]# cat /sys/kernel/mm/transparent_hugepage/enabled
 always madvise [never]
-root@ip-172-31-17-139:~# cat /sys/kernel/mm/transparent_hugepage/defrag
+[root@ip-172-31-27-85 ~]# cat /sys/kernel/mm/transparent_hugepage/defrag
 always madvise [never]
 #
 # 5. Report the network interface attributes
-ifconfig
-# ->
-eth0      Link encap:Ethernet  HWaddr 06:45:d1:86:20:af
-          inet addr:172.31.17.139  Bcast:172.31.31.255  Mask:255.255.240.0
-          inet6 addr: fe80::445:d1ff:fe86:20af/64 Scope:Link
+[root@ip-172-31-27-85 ~]# ifconfig
+eth0      Link encap:Ethernet  HWaddr 06:AD:01:AC:45:6F
+          inet addr:172.31.27.85  Bcast:172.31.31.255  Mask:255.255.240.0
+          inet6 addr: fe80::4ad:1ff:feac:456f/64 Scope:Link
           UP BROADCAST RUNNING MULTICAST  MTU:9001  Metric:1
-          RX packets:638 errors:0 dropped:0 overruns:0 frame:0
-          TX packets:647 errors:0 dropped:0 overruns:0 carrier:0
+          RX packets:267 errors:0 dropped:0 overruns:0 frame:0
+          TX packets:320 errors:0 dropped:0 overruns:0 carrier:0
           collisions:0 txqueuelen:1000
-          RX bytes:71216 (71.2 KB)  TX bytes:78961 (78.9 KB)
+          RX bytes:33235 (32.4 KiB)  TX bytes:37712 (36.8 KiB)
+          Interrupt:145
 
 lo        Link encap:Local Loopback
           inet addr:127.0.0.1  Mask:255.0.0.0
@@ -80,45 +54,45 @@ lo        Link encap:Local Loopback
           RX packets:0 errors:0 dropped:0 overruns:0 frame:0
           TX packets:0 errors:0 dropped:0 overruns:0 carrier:0
           collisions:0 txqueuelen:0
-          RX bytes:0 (0.0 B)  TX bytes:0 (0.0 B)
+          RX bytes:0 (0.0 b)  TX bytes:0 (0.0 b)
 #
 # 6. Show forward and reverse host lookups using getent and nslookup
-ec2-35-156-86-130.eu-central-1.compute.amazonaws.com
-ec2-35-156-82-93.eu-central-1.compute.amazonaws.com
-ec2-35-156-54-220.eu-central-1.compute.amazonaws.com
-ec2-35-156-80-75.eu-central-1.compute.amazonaws.com
-ec2-35-156-86-14.eu-central-1.compute.amazonaws.com
+ ec2-35-156-84-238.eu-central-1.compute.amazonaws.com 
+ ec2-35-156-77-44.eu-central-1.compute.amazonaws.com  
+ ec2-35-156-92-134.eu-central-1.compute.amazonaws.com 
+ ec2-35-156-72-122.eu-central-1.compute.amazonaws.com 
+ ec2-35-156-56-18.eu-central-1.compute.amazonaws.com  
 #
 # 6a. getent
-root@ip-172-31-17-139:~#  getent ahosts
-127.0.0.1       localhost
-127.0.0.1       ip6-localhost ip6-loopback
+[ec2-user@ip-172-31-27-82 ~]$ getent ahosts
+127.0.0.1       localhost localhost.localdomain localhost4 localhost4.localdomain4
+127.0.0.1       localhost localhost.localdomain localhost6 localhost6.localdomain6
 #
 # 6b.nslookup (http://www.thegeekstuff.com/2012/07/nslookup-examples)
-root@ip-172-31-17-139:~# nslookup 35.156.54.220
+[root@ip-172-31-27-85 ~]# nslookup 35.156.77.44
 Server:         172.31.0.2
 Address:        172.31.0.2#53
 
 Non-authoritative answer:
-220.54.156.35.in-addr.arpa      name = ec2-35-156-54-220.eu-central-1.compute.amazonaws.com.
+44.77.156.35.in-addr.arpa       name = ec2-35-156-77-44.eu-central-1.compute.amazonaws.com.
 
 Authoritative answers can be found from:
 #
 # 7. Verify the nscd service is running
-root@ip-172-31-17-139:~# sudo apt-get install  nscd
-root@ip-172-31-17-139:~# sudo apt-get update
-root@ip-172-31-17-139:~# sudo service nscd start
- * Starting Name Service Cache Daemon nscd                      [ OK ]
-root@ip-172-31-17-139:~# sudo service nscd status
- * Status of Name Service Cache Daemon service:   
- * running.
+[root@ip-172-31-27-85 ~]# sudo yum install nscd
+[root@ip-172-31-27-85 ~]# sudo yum update yum
+[root@ip-172-31-27-85 ~]# sudo service nscd start
+Starting nscd:                                             [  OK  ]
+[root@ip-172-31-27-85 ~]# sudo service nscd status
+nscd (pid 2052) is running...
 #
 # 8. Verify the ntpd service is running
-root@ip-172-31-17-139:~# sudo apt-get install ntp
-root@ip-172-31-17-139:~# sudo apt-get update
-root@ip-172-31-17-139:~# sudo service ntp start
- * Starting NTP server ntpd                                     [ OK ]
-root@ip-172-31-17-139:~# sudo service ntp status
- * NTP server is running
+[root@ip-172-31-27-85 ~]# sudo yum install ntp
+[root@ip-172-31-27-85 ~]# sudo yum update yum
+[root@ip-172-31-27-85 ~]# sudo service ntpd start
+Starting ntpd:                                             [  OK  ]
+[root@ip-172-31-27-85 ~]# sudo service ntpd status
+ntpd (pid  2161) is running...
+
 
 
