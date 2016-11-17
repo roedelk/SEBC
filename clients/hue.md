@@ -38,7 +38,7 @@
 * Drives [Cloudera Live](http://www.cloudera.com/content/cloudera/en/products-and-services/cloudera-live.html)
 * Active blogging on new developments: [gethue.com](http://gethue.com)
 * Some [screencasts available](http://vimeo.com/search?q=gethue)
-
+(no major development, 3 developers)
 ---
 <div style="page-break-after: always;"></div>
 
