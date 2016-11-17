@@ -1,5 +1,5 @@
 
-wget https://archive.cloudera.com/cm5/redhat/6/x86_64/cm/cloudera-manager.repo -O  /etc/yum.repos.d/cloudera-manager.repo
+wget https://archive.cloudera.com/cm5/redhat/6/x86_64/cm/cloudera-manager.repo -O  /etc/yum.repos.d/cloudera-manager.repo 
 yum update yum
 sudo yum install oracle-j2sdk1.7
 ln -s /usr/share/java/mysql-connector-java-5.1.40-bin.jar /usr/java/jdk1.7.0_67-cloudera/lib/mysql-connector.jar

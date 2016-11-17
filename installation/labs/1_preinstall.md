@@ -1,4 +1,4 @@
-# 1a. Check vm.swappiness on all your nodes: http://askubuntu.com/questions/103915/how-do-i-configure-swappiness
+# 1a. Check vm.swappiness on all your nodes: http://askubuntu.com/questions/103915/how-do-i-configure-swappiness 
 [ec2-user@ip-172-31-27-82 ~]$ cat /proc/sys/vm/swappiness
 60
 # 1b. Set the value to 1 if necessary

@@ -1,5 +1,5 @@
 # MySQL installation
-# http://www.cloudera.com/documentation/enterprise/5-8-x/topics/cm_ig_mysql.html
+# http://www.cloudera.com/documentation/enterprise/5-8-x/topics/cm_ig_mysql.html 
 
 wget http://repo.mysql.com/mysql-community-release-el6-5.noarch.rpm
 sudo rpm -ivh mysql-community-release-el6-5.noarch.rpm
