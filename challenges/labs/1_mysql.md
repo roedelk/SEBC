@@ -16,7 +16,6 @@ sudo ln -s /usr/share/java/mysql-connector-java-5.1.40-bin.jar /usr/share/java/m
 sudo service mysqld start
 
 create database scm DEFAULT CHARACTER SET utf8;
-grant all on *.* TO 'scm'@'%' IDENTIFIED BY          'scm';
 create database rman DEFAULT CHARACTER SET utf8;
 grant all on rman.* TO 'rman'@'%' IDENTIFIED BY      'rman_password';
 create database metastore DEFAULT CHARACTER SET utf8;
