@@ -29,6 +29,14 @@ mysql> show grants for scm;
 Database connection fails during CDH installation. :-(
 Apparently it is the same reason as the remote Mysql access did not work.
 
+Driver exists. Access rights are set.
+
+[ec2-user@ip-172-31-23-169 ~]$ ll /usr/share/java/
+total 968
+-rw-r--r--. 1 root root 990927 Nov 18 03:25 mysql-connector-java-5.1.40-bin.jar
+lrwxrwxrwx. 1 root root     51 Nov 18 03:25 mysql-connector-java.jar -> /usr/share/java/mysql-connector-java-5.1.40-bin.jar
+
+
 mysql> SHOW GRANTS FOR oozie@'ip-172-31-23-169.eu-central-1.compute.internal';
 +---------------------------------------------------------------------------------------------------------------------------------------------------+
 | Grants for oozie@ip-172-31-23-169.eu-central-1.compute.internal                                                                                   |
